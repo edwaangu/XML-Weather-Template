@@ -23,8 +23,8 @@ namespace XMLWeather
             ExtractCurrent();
             
             // open weather screen for todays weather
-            CurrentScreen cs = new CurrentScreen();
-            this.Controls.Add(cs);
+            WeatherScreen ws = new WeatherScreen();
+            this.Controls.Add(ws);
         }
 
         private void ExtractForecast()
@@ -34,14 +34,44 @@ namespace XMLWeather
             while (reader.Read())
             {
                 Day d = new Day();
-
                 reader.ReadToFollowing("time");
                 d.date = reader.GetAttribute("day");
 
+                reader.ReadToFollowing("symbol");
+                d.condition = reader.GetAttribute("number");
+
+                reader.ReadToFollowing("precipitation");
+                d.chanceofprep = reader.GetAttribute("probability");
+                if (d.chanceofprep != "0") { 
+                    d.precipitation = reader.GetAttribute("value");
+                    if(d.precipitation == null)
+                    {
+                        d.precipitation = "";
+                    }
+                }
+
+                reader.ReadToFollowing("windDirection");
+                d.windDirection = reader.GetAttribute("code");
+
+                reader.ReadToFollowing("windSpeed");
+                d.windSpeed = reader.GetAttribute("mps");
+
+                reader.ReadToFollowing("windGust");
+                d.windGust = reader.GetAttribute("gust");
+
 
                 reader.ReadToFollowing("temperature");
+                d.afternoon = reader.GetAttribute("day");
                 d.tempLow = reader.GetAttribute("min");
                 d.tempHigh = reader.GetAttribute("max");
+                d.overnight = reader.GetAttribute("night");
+                d.evening = reader.GetAttribute("eve");
+                d.morning = reader.GetAttribute("morn");
+
+
+                reader.ReadToFollowing("clouds");
+                d.cloudcover = reader.GetAttribute("all");
+
 
                 if (d != null)
                 {
@@ -54,12 +84,19 @@ namespace XMLWeather
 
         private void ExtractCurrent()
         {
-            // current info is not included in forecast file so we need to use this file to get it
             XmlReader reader = XmlReader.Create("http://api.openweathermap.org/data/2.5/weather?q=Stratford,CA&mode=xml&units=metric&appid=3f2e224b815c0ed45524322e145149f0");
-
-            //TODO: find the city and current temperature and add to appropriate item in days list
             reader.ReadToFollowing("city");
             days[0].location = reader.GetAttribute("name");
+
+            for(int i = 1;i < days.Count;i++)
+            {
+                days[i].location = days[0].location;
+            }
+
+
+            reader.ReadToFollowing("sun");
+            days[0].sunrise = reader.GetAttribute("rise");
+            days[0].sunset = reader.GetAttribute("set");
 
             reader.ReadToFollowing("temperature");
             days[0].currentTemp = reader.GetAttribute("value");

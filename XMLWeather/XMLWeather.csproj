@@ -67,6 +67,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WeatherScreen.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WeatherScreen.Designer.cs">
+      <DependentUpon>WeatherScreen.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="CurrentScreen.resx">
       <DependentUpon>CurrentScreen.cs</DependentUpon>
     </EmbeddedResource>
@@ -86,6 +92,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="WeatherScreen.resx">
+      <DependentUpon>WeatherScreen.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -98,6 +107,45 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Rain3.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\snow_0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\snow_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\snow_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\snow_3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud_8.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

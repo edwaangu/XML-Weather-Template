@@ -8,12 +8,12 @@ namespace XMLWeather
     public class Day
     {
         public string date, currentTemp, currentTime, condition, location, tempHigh, tempLow, 
-            windSpeed, windDirection, precipitation, visibility;
+            windSpeed, windGust, windDirection, precipitation, cloudcover, morning, afternoon, evening, overnight, chanceofprep, sunrise, sunset;
 
         public Day()
         {
             date = currentTemp = currentTime = condition = location = tempHigh = tempLow
-                = windSpeed = windDirection = precipitation = visibility = "";
+                = windSpeed = windGust = windDirection = precipitation = cloudcover = morning = afternoon = evening = overnight = chanceofprep = sunrise = sunset = "";
         }
     }
 }
