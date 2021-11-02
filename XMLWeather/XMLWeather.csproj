@@ -190,6 +190,30 @@
   <ItemGroup>
     <None Include="Resources\lightning.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\50d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\13d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\11d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\09d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\04d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\03d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\02d.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\01d.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
