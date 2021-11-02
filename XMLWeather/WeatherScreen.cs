@@ -13,6 +13,13 @@ namespace XMLWeather
     {
         /**
                 Screen used for displaying any weather information, only one other screen is needed
+
+
+            TO DO:
+                - Location searching
+                - 7 day forcast
+                - Extra information to current weather
+                - Polishing
         */
 
         // Variables
