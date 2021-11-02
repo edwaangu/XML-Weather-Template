@@ -63,9 +63,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_0 {
+        internal static System.Drawing.Bitmap cloud0 {
             get {
-                object obj = ResourceManager.GetObject("cloud_0", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud0", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_1 {
+        internal static System.Drawing.Bitmap cloud1 {
             get {
-                object obj = ResourceManager.GetObject("cloud_1", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_2 {
+        internal static System.Drawing.Bitmap cloud2 {
             get {
-                object obj = ResourceManager.GetObject("cloud_2", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_3 {
+        internal static System.Drawing.Bitmap cloud3 {
             get {
-                object obj = ResourceManager.GetObject("cloud_3", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,9 +103,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_4 {
+        internal static System.Drawing.Bitmap cloud4 {
             get {
-                object obj = ResourceManager.GetObject("cloud_4", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud4", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +113,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_5 {
+        internal static System.Drawing.Bitmap cloud5 {
             get {
-                object obj = ResourceManager.GetObject("cloud_5", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud5", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -123,9 +123,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_6 {
+        internal static System.Drawing.Bitmap cloud6 {
             get {
-                object obj = ResourceManager.GetObject("cloud_6", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud6", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -133,9 +133,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_7 {
+        internal static System.Drawing.Bitmap cloud7 {
             get {
-                object obj = ResourceManager.GetObject("cloud_7", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud7", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -143,9 +143,9 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_8 {
+        internal static System.Drawing.Bitmap cloud8 {
             get {
-                object obj = ResourceManager.GetObject("cloud_8", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud8", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -153,9 +153,49 @@ namespace XMLWeather.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Rain3 {
+        internal static System.Drawing.Bitmap cloudcover0 {
             get {
-                object obj = ResourceManager.GetObject("Rain3", resourceCulture);
+                object obj = ResourceManager.GetObject("cloudcover0", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cloudcover1 {
+            get {
+                object obj = ResourceManager.GetObject("cloudcover1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ground {
+            get {
+                object obj = ResourceManager.GetObject("ground", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap lightning {
+            get {
+                object obj = ResourceManager.GetObject("lightning", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap moon {
+            get {
+                object obj = ResourceManager.GetObject("moon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

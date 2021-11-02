@@ -65,6 +65,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Particle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeatherScreen.cs">
@@ -146,6 +147,48 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\cloud_8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloud8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloudcover0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cloudcover1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\moon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\lightning.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

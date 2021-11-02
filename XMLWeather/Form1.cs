@@ -14,6 +14,8 @@ namespace XMLWeather
     public partial class Form1 : Form
     {
         public static List<Day> days = new List<Day>();
+        public static double timezone = 0;
+        public static int maxID = 0;
 
         public Form1()
         {
@@ -93,6 +95,8 @@ namespace XMLWeather
                 days[i].location = days[0].location;
             }
 
+            reader.ReadToDescendant("timezone");
+            timezone = Convert.ToDouble(reader.ReadString()) / 3600;
 
             reader.ReadToFollowing("sun");
             days[0].sunrise = reader.GetAttribute("rise");
@@ -102,6 +106,12 @@ namespace XMLWeather
             days[0].currentTemp = reader.GetAttribute("value");
             days[0].tempLow = reader.GetAttribute("min");
             days[0].tempHigh = reader.GetAttribute("max");
+
+            reader.ReadToFollowing("clouds");
+            days[0].cloudcover = reader.GetAttribute("value");
+
+            reader.ReadToFollowing("weather");
+            days[0].condition = reader.GetAttribute("number");
 
             reader.ReadToFollowing("lastupdate");
             days[0].currentTime = reader.GetAttribute("value");
