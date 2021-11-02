@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace XMLWeather
 {
@@ -22,10 +23,13 @@ namespace XMLWeather
                 - Polishing
         */
 
-        // Variables
+        /** VARIABLES **/
+        // Selection bar up top
         int mode = 0; // 0 is current weather, 1 is weekly, 2 is search for location
         float selectBarX = 0;
         double rad2Deg = 180 / Math.PI;
+
+        // Weather background related variables
         double t = 0;
         float nextDrop = 0;
         int theCondition = 800;
@@ -33,9 +37,15 @@ namespace XMLWeather
         Random randGen = new Random();
         int lightningX = 150;
         int nextCloud = 0;
+        double cover1X = 0;
+        double cover2X = -350;
 
+        List<Particle> ps = new List<Particle>();
+
+        // For formatting text
         StringFormat centerFormat = new StringFormat(StringFormatFlags.NoClip);
 
+        // Images
         Image[] lightClouds = { Properties.Resources.cloud0, Properties.Resources.cloud1, Properties.Resources.cloud2 };
         Image[] grayClouds = { Properties.Resources.cloud3, Properties.Resources.cloud4, Properties.Resources.cloud5 };
         Image[] darkClouds = { Properties.Resources.cloud6, Properties.Resources.cloud7, Properties.Resources.cloud8 };
@@ -44,14 +54,16 @@ namespace XMLWeather
 
         Image cloudCover = Properties.Resources.cloudcover0;
         Image stormCover = Properties.Resources.cloudcover1;
-        double cover1X = 0;
-        double cover2X = -350;
-
-        List<Particle> ps = new List<Particle>();
 
         Image ground = Properties.Resources.ground;
         Image moon = Properties.Resources.moon;
         Image lightning = Properties.Resources.lightning;
+
+        // Finding location
+        int locationFindMode = 0;
+
+        // Forecast variables
+        int selectedDay = 1;
 
         string conditionToString(int condition)
         {
@@ -169,8 +181,19 @@ namespace XMLWeather
             {
                 curtime += 24;
             }
+            // -14400 - -10800
+            curtime -= (Form1.defaultTimezone / 3600) - Form1.timezone;
 
-            if(curtime <= sunset)
+            if (curtime < 0)
+            {
+                curtime += 24;
+            }
+            if (curtime >= 24)
+            {
+                curtime -= 24;
+            }
+
+            if (curtime <= sunset)
             {
                 returnValue = (curtime / sunset) * 180;
             }
@@ -191,6 +214,10 @@ namespace XMLWeather
         public WeatherScreen()
         {
             InitializeComponent();
+
+            ExtractForecast();
+            ExtractCurrent();
+
             centerFormat.LineAlignment = StringAlignment.Center;
             centerFormat.Alignment = StringAlignment.Center;
         }
@@ -320,12 +347,35 @@ namespace XMLWeather
                 e.Graphics.DrawString($"{Form1.days[0].location}", new Font("Segoe UI", 12, FontStyle.Regular), new SolidBrush(Color.White), this.Width / 2, 90, centerFormat);
 
                 // Temperature label
-                e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[0].currentTemp))}°", new Font("Segoe UI", 80, FontStyle.Bold), new SolidBrush(Color.White), this.Width / 2, 155, centerFormat);
+                e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[0].currentTemp))}°C", new Font("Segoe UI", 80, FontStyle.Bold), new SolidBrush(Color.White), this.Width / 2, 155, centerFormat);
 
                 // Current Weather label
                 e.Graphics.DrawString($"{conditionToString(Convert.ToInt16(Form1.days[0].condition))}", new Font("Segoe UI", 18, FontStyle.Bold), new SolidBrush(Color.White), this.Width / 2, 225, centerFormat);
             }
+            if (mode == 1)
+            {
+                for (int i = 1; i < Form1.days.Count - 1; i++)
+                {
+                    e.Graphics.DrawString($"{Convert.ToDateTime(Form1.days[i].date).ToString("ddd").ToUpper()}", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55*(i-1), 340, centerFormat);
+                    e.Graphics.DrawString($"{Convert.ToDateTime(Form1.days[i].date).ToString("dd")}", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55 * (i - 1), 360, centerFormat);
+                    // Forecast Image
+                    e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[i].tempHigh))}º", new Font("Segoe UI", 16, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55 * (i - 1), 440, centerFormat);
+                    e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[i].tempLow))}º", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.Gray), 12 + 25 + 55 * (i - 1), 460, centerFormat);
+                    e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[i].chanceofprep))}%", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55 * (i - 1), 500, centerFormat);
 
+                    if (Form1.days[i].precipitation != "")
+                    {
+                        float precipitationBar = 1 + Convert.ToSingle(Form1.days[i].precipitation) * 5;
+                        if(precipitationBar > 150)
+                        {
+                            precipitationBar = 150;
+                        }
+                        e.Graphics.FillRectangle(new SolidBrush(Color.Blue), 12 + 55 * (i - 1), this.Height - 10 - 1 - Convert.ToSingle(Form1.days[i].precipitation) * 5, 50, precipitationBar);
+
+                        e.Graphics.DrawString($"{(Math.Round(Convert.ToDouble(Form1.days[i].precipitation)*10)/10)}mm", new Font("Segoe UI", 10, FontStyle.Bold), new SolidBrush(Color.Blue), 12 + 25 + 55 * (i - 1), this.Height - 17 - precipitationBar, centerFormat);
+                    }
+                }
+            }
             // Select bar
             e.Graphics.FillRectangle(new SolidBrush(Color.White), selectBarX, 60, 118, 5);
 
@@ -341,10 +391,53 @@ namespace XMLWeather
             if (mode == 1)
             {
                 selectBarX += (116 - selectBarX) / 5;
+                day1Button.Enabled = true;
+                day1Button.Visible = true;
+                day2Button.Enabled = true;
+                day2Button.Visible = true;
+                day3Button.Enabled = true;
+                day3Button.Visible = true;
+                day4Button.Enabled = true;
+                day4Button.Visible = true;
+                day5Button.Enabled = true;
+                day5Button.Visible = true;
+                day6Button.Enabled = true;
+                day6Button.Visible = true;
+            }
+            else
+            {
+                day1Button.Enabled = false;
+                day1Button.Visible = false;
+                day2Button.Enabled = false;
+                day2Button.Visible = false;
+                day3Button.Enabled = false;
+                day3Button.Visible = false;
+                day4Button.Enabled = false;
+                day4Button.Visible = false;
+                day5Button.Enabled = false;
+                day5Button.Visible = false;
+                day6Button.Enabled = false;
+                day6Button.Visible = false;
             }
             if (mode == 2)
             {
                 selectBarX += (232 - selectBarX) / 5;
+                locationBox.Enabled = true;
+                locationBox.Visible = true;
+                searchButton.Enabled = true;
+                searchButton.Visible = true;
+                labelInfo.Visible = true;
+            }
+            else
+            {
+                locationBox.Enabled = false;
+                locationBox.Visible = false;
+                searchButton.Enabled = false;
+                searchButton.Visible = false;
+                labelInfo.Visible = false;
+                selectCityButton.Enabled = false;
+                selectCityButton.Visible = false;
+                errorLabel.Visible = false;
             }
 
             if (mode == 0)
@@ -362,7 +455,7 @@ namespace XMLWeather
                 t += 0.1;
                 nextDrop--;
 
-                //theCondition = Convert.ToInt16(Form1.days[0].condition);
+                theCondition = Convert.ToInt16(Form1.days[0].condition);
                 //theCondition = 202;
                 if (conditionToString(theCondition) == "Drizzle")
                 {
@@ -439,20 +532,22 @@ namespace XMLWeather
                 else if(theCondition >= 800 && theCondition <= 803)
                 {
                     nextCloud--;
-                    if(nextCloud <= 0 && randGen.Next(1, 1000) > Convert.ToInt32(Form1.days[0].cloudcover))
-                    {
-                        nextCloud = randGen.Next(60 - Convert.ToInt32(Convert.ToInt32(Form1.days[0].cloudcover) / 3), 200);
-                        if (calculateSunHeight() <= 180)
+                    if(nextCloud <= 0) { 
+                        nextCloud = randGen.Next(60, 100);
+                        if (randGen.Next(1, 100) <= Convert.ToInt32(Form1.days[0].cloudcover))
                         {
-                            ps.Add(new Particle(-100, randGen.Next(0, 400), Convert.ToDouble(randGen.Next(2, 5)) / 10, 0, 0, randGen.Next(5, 7)));
-                            ps[ps.Count - 1].setWidth(randGen.Next(80, 180));
-                            ps[ps.Count - 1].w = -ps[ps.Count - 1].w;
-                        }
-                        else
-                        {
-                            ps.Add(new Particle(-100, randGen.Next(0, 400), Convert.ToDouble(randGen.Next(2, 5)) / 10, 0, 0, randGen.Next(8, 10)));
-                            ps[ps.Count - 1].setWidth(randGen.Next(80, 180));
-                            ps[ps.Count - 1].x = -ps[ps.Count - 1].w;
+                            if (calculateSunHeight() <= 180)
+                            {
+                                ps.Add(new Particle(-100, randGen.Next(0, 400), Convert.ToDouble(randGen.Next(2, 5)) / 10, 0, 0, randGen.Next(5, 7)));
+                                ps[ps.Count - 1].setWidth(randGen.Next(80, 180));
+                                ps[ps.Count - 1].w = -ps[ps.Count - 1].w;
+                            }
+                            else
+                            {
+                                ps.Add(new Particle(-100, randGen.Next(0, 400), Convert.ToDouble(randGen.Next(2, 5)) / 10, 0, 0, randGen.Next(8, 10)));
+                                ps[ps.Count - 1].setWidth(randGen.Next(80, 180));
+                                ps[ps.Count - 1].x = -ps[ps.Count - 1].w;
+                            }
                         }
                     }
                 }
@@ -464,7 +559,7 @@ namespace XMLWeather
 
                 for(int i = ps.Count - 1; i >= 0; i--)
                 {
-                    if (ps[i].x > 400)
+                    if (ps[i].x > 600)
                     {
                         ps.RemoveAt(i);
                         continue;
@@ -476,7 +571,31 @@ namespace XMLWeather
                     }
                 }
             }
+            if (mode == 1)
+            {
 
+            }
+            if (mode == 2)
+            {
+                if(locationFindMode == 0)
+                {
+                    selectCityButton.Enabled = false;
+                    selectCityButton.Visible = false;
+                    errorLabel.Visible = false;
+                }
+                else if(locationFindMode == 1)
+                {
+                    selectCityButton.Enabled = true;
+                    selectCityButton.Visible = true;
+                    errorLabel.Visible = true;
+                }
+                else if (locationFindMode == 2)
+                {
+                    selectCityButton.Enabled = false;
+                    selectCityButton.Visible = false;
+                    errorLabel.Visible = true;
+                }
+            }
 
             this.Refresh();
         }
@@ -484,6 +603,7 @@ namespace XMLWeather
         private void locationButton_Click(object sender, EventArgs e)
         {
             mode = 2;
+            locationFindMode = 0;
         }
 
         private void weekButton_Click(object sender, EventArgs e)
@@ -494,6 +614,182 @@ namespace XMLWeather
         private void currentButton_Click(object sender, EventArgs e)
         {
             mode = 0;
+        }
+
+        private void selectCityButton_Click(object sender, EventArgs e)
+        {
+            Form1.city = locationBox.Text;
+
+            ExtractForecast();
+            ExtractCurrent();
+
+            ps.Clear();
+
+            mode = 0;
+            locationFindMode = 0;
+        }
+
+        private void searchButton_Click(object sender, EventArgs e)
+        {
+            if (findLocation(locationBox.Text))
+            {
+                locationFindMode = 1;
+                try
+                {
+                    selectCityButton.Text = $"{locationBox.Text} - {getTemperature(locationBox.Text)}°C";
+                    errorLabel.Text = "Is this your city?";
+                }
+                catch
+                {
+                    errorLabel.Text = "Could not find City";
+                }
+            }
+            else
+            {
+                locationFindMode = 2;
+                errorLabel.Text = "City not valid!";
+            }
+        }
+
+        private bool findLocation(string _city)
+        {
+            try
+            {
+                XmlReader reader = XmlReader.Create("http://api.openweathermap.org/data/2.5/weather?q=" + _city + "&mode=xml&units=metric&appid=3f2e224b815c0ed45524322e145149f0");
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private double getTemperature(string _city)
+        {
+            XmlReader reader = XmlReader.Create("http://api.openweathermap.org/data/2.5/weather?q=" + _city + "&mode=xml&units=metric&appid=3f2e224b815c0ed45524322e145149f0");
+            reader.ReadToFollowing("temperature");
+            return Math.Round(Convert.ToDouble(reader.GetAttribute("value")));
+        }
+
+        private void ExtractForecast()
+        {
+            XmlReader reader = XmlReader.Create("http://api.openweathermap.org/data/2.5/forecast/daily?q=" + Form1.city + "&mode=xml&units=metric&cnt=7&appid=3f2e224b815c0ed45524322e145149f0");
+            Form1.days.Clear();
+            while (reader.Read())
+            {
+                Day d = new Day();
+                reader.ReadToFollowing("time");
+                d.date = reader.GetAttribute("day");
+
+                reader.ReadToFollowing("symbol");
+                d.condition = reader.GetAttribute("number");
+
+                reader.ReadToFollowing("precipitation");
+                d.chanceofprep = reader.GetAttribute("probability");
+                if (d.chanceofprep != "0")
+                {
+                    d.precipitation = reader.GetAttribute("value");
+                    if (d.precipitation == null)
+                    {
+                        d.precipitation = "";
+                    }
+                }
+
+                reader.ReadToFollowing("windDirection");
+                d.windDirection = reader.GetAttribute("code");
+
+                reader.ReadToFollowing("windSpeed");
+                d.windSpeed = reader.GetAttribute("mps");
+
+                reader.ReadToFollowing("windGust");
+                d.windGust = reader.GetAttribute("gust");
+
+
+                reader.ReadToFollowing("temperature");
+                d.afternoon = reader.GetAttribute("day");
+                d.tempLow = reader.GetAttribute("min");
+                d.tempHigh = reader.GetAttribute("max");
+                d.overnight = reader.GetAttribute("night");
+                d.evening = reader.GetAttribute("eve");
+                d.morning = reader.GetAttribute("morn");
+
+
+                reader.ReadToFollowing("clouds");
+                d.cloudcover = reader.GetAttribute("all");
+
+
+                if (d != null)
+                {
+                    Form1.days.Add(d);
+                }
+            }
+
+            reader.Close();
+        }
+
+        private void ExtractCurrent()
+        {
+            XmlReader reader = XmlReader.Create("http://api.openweathermap.org/data/2.5/weather?q=" + Form1.city + "&mode=xml&units=metric&appid=3f2e224b815c0ed45524322e145149f0");
+            reader.ReadToFollowing("city");
+            Form1.days[0].location = reader.GetAttribute("name");
+
+            for (int i = 1; i < Form1.days.Count; i++)
+            {
+                Form1.days[i].location = Form1.days[0].location;
+            }
+
+            reader.ReadToDescendant("timezone");
+            Form1.timezone = Convert.ToDouble(reader.ReadString()) / 3600;
+
+            reader.ReadToFollowing("sun");
+            Form1.days[0].sunrise = reader.GetAttribute("rise");
+            Form1.days[0].sunset = reader.GetAttribute("set");
+
+            reader.ReadToFollowing("temperature");
+            Form1.days[0].currentTemp = reader.GetAttribute("value");
+            Form1.days[0].tempLow = reader.GetAttribute("min");
+            Form1.days[0].tempHigh = reader.GetAttribute("max");
+
+            reader.ReadToFollowing("clouds");
+            Form1.days[0].cloudcover = reader.GetAttribute("value");
+
+            reader.ReadToFollowing("weather");
+            Form1.days[0].condition = reader.GetAttribute("number");
+
+            reader.ReadToFollowing("lastupdate");
+            Form1.days[0].currentTime = reader.GetAttribute("value");
+
+            reader.Close();
+        }
+
+        private void day1Button_Click(object sender, EventArgs e)
+        {
+            selectedDay = 1;
+        }
+
+        private void day2Button_Click(object sender, EventArgs e)
+        {
+            selectedDay = 2;
+        }
+
+        private void day3Button_Click(object sender, EventArgs e)
+        {
+            selectedDay = 3;
+        }
+
+        private void day4Button_Click(object sender, EventArgs e)
+        {
+            selectedDay = 4;
+        }
+
+        private void day5Button_Click(object sender, EventArgs e)
+        {
+            selectedDay = 5;
+        }
+
+        private void day6Button_Click(object sender, EventArgs e)
+        {
+            selectedDay = 6;
         }
     }
 }
