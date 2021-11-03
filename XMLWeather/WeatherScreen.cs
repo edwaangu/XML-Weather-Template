@@ -13,14 +13,7 @@ namespace XMLWeather
     public partial class WeatherScreen : UserControl
     {
         /**
-                Screen used for displaying any weather information, only one other screen is needed
-
-
-            TO DO:
-                - Location searching
-                - 7 day forcast
-                - Extra information to current weather
-                - Polishing
+                Main Screen and only screen
         */
 
         /** VARIABLES **/
@@ -39,9 +32,12 @@ namespace XMLWeather
         int nextCloud = 0;
         double cover1X = 0;
         double cover2X = -350;
-        double windSin = 0;
 
         List<Particle> ps = new List<Particle>();
+
+        // Calculation variables
+        double windSin = 0;
+
 
         // For formatting text
         StringFormat centerFormat = new StringFormat(StringFormatFlags.NoClip);
@@ -68,6 +64,7 @@ namespace XMLWeather
         // Forecast variables
         int selectedDay = 1;
 
+        // Used to output a condition code to a lower amount of strings
         string conditionToString(int condition)
         {
             if(condition >= 200 && condition <= 232)
@@ -140,10 +137,11 @@ namespace XMLWeather
             }
             else
             {
-                return "Death";
+                return "Death"; // Death (Easter Egg)
             }
         }
 
+        // Used to output a condtion from conditionToString to an image used in the forecast
         Image conditionToImage(string condition)
         {
             if(condition == "Clear")
@@ -173,6 +171,7 @@ namespace XMLWeather
             return weatherIcons[6];
         }
 
+        // Calculate sun position
         double calculateSunHeight()
         {
             double returnValue = 0;
@@ -237,12 +236,14 @@ namespace XMLWeather
             return returnValue;
         }
 
+        // Lerp color function because there wasn't one
         Color lerpColor(Color c1, Color c2, double amt)
         {
             // c2.R = 50, c1.R = 30, amt = 0.5
             return Color.FromArgb(Convert.ToInt32(c1.R + (c2.R - c1.R) * amt), Convert.ToInt32(c1.G + (c2.G - c1.G) * amt), Convert.ToInt32(c1.B + (c2.B - c1.B) * amt));
         }
 
+        // Convert wind directions to wind code (I could use the wind code provided by the xml but I don't want triple letter directions)
         string windCode(int _windDir)
         {
             if(_windDir >= 22.5 && _windDir < 67.5)
@@ -276,11 +277,16 @@ namespace XMLWeather
             return "N";
         }
 
+        // Box of information including morn/aft/eve/overnight temps and 
         void boxOfInfo(PaintEventArgs e, int weatherDay, int y)
         {
+            // Box
             e.Graphics.DrawRectangle(new Pen(Color.White, 3), 20, 110 + y, this.Width - 40, 200);
+
+            // Date
             e.Graphics.DrawString($"{Convert.ToDateTime(Form1.days[weatherDay].date).ToString("dddd, MMMM d")}", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.White), this.Width / 2, 85 + y, centerFormat);
 
+            // 24 Hour Weather
             e.Graphics.DrawString("MORN", new Font("Segoe UI", 9, FontStyle.Bold), new SolidBrush(Color.White), 17 + ((310 / 4) * 0) + (310 / 8), 125 + y, centerFormat);
             e.Graphics.DrawString("AFT", new Font("Segoe UI", 9, FontStyle.Bold), new SolidBrush(Color.White), 17 + ((310 / 4) * 1) + (310 / 8), 125 + y, centerFormat);
             e.Graphics.DrawString("EVENING", new Font("Segoe UI", 9, FontStyle.Bold), new SolidBrush(Color.White), 17 + ((310 / 4) * 2) + (310 / 8), 125 + y, centerFormat);
@@ -291,6 +297,7 @@ namespace XMLWeather
             e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[weatherDay].evening))}º", new Font("Segoe UI", 20, FontStyle.Bold), new SolidBrush(Color.White), 17 + ((310 / 4) * 2) + (310 / 8), 145 + y, centerFormat);
             e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[weatherDay].overnight))}º", new Font("Segoe UI", 20, FontStyle.Bold), new SolidBrush(Color.White), 17 + ((310 / 4) * 3) + (310 / 8), 145 + y, centerFormat);
 
+            // Wind direction
             windSin += (((Convert.ToDouble(Form1.days[weatherDay].windDirection)) / rad2Deg) - windSin) / 20;
 
             e.Graphics.DrawLine(new Pen(Color.White, 3), 30, 170 + y, this.Width - 30, 170 + y);
@@ -302,12 +309,13 @@ namespace XMLWeather
             e.Graphics.DrawLine(new Pen(Color.White, 3), this.Width / 3 + Convert.ToSingle(Math.Sin(windSin - (10 / rad2Deg)) * 25), 240 + y - Convert.ToSingle(Math.Cos(windSin - (10 / rad2Deg)) * 25), this.Width / 3 + Convert.ToSingle(Math.Sin(windSin) * 30), 240 + y - Convert.ToSingle(Math.Cos(windSin) * 30));
             e.Graphics.DrawLine(new Pen(Color.White, 3), this.Width / 3 + Convert.ToSingle(Math.Sin(windSin + (10 / rad2Deg)) * 25), 240 + y - Convert.ToSingle(Math.Cos(windSin + (10 / rad2Deg)) * 25), this.Width / 3 + Convert.ToSingle(Math.Sin(windSin) * 30), 240 + y - Convert.ToSingle(Math.Cos(windSin) * 30));
 
-
+            // Wind Speeds
             e.Graphics.DrawString("WIND SPEED", new Font("Segoe UI", 10, FontStyle.Bold), new SolidBrush(Color.White), this.Width - 17 - this.Width / 3, 205 + y, centerFormat);
             e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[weatherDay].windSpeed))}m/s {windCode(Convert.ToInt16(Form1.days[weatherDay].windDirection))}", new Font("Segoe UI", 16, FontStyle.Bold), new SolidBrush(Color.White), this.Width - 17 - this.Width / 4, 240 + y, centerFormat);
             e.Graphics.DrawString($"GUST: {Math.Round(Convert.ToDouble(Form1.days[weatherDay].windGust))} m/s", new Font("Segoe UI", 10, FontStyle.Bold), new SolidBrush(Color.White), this.Width - 17 - this.Width / 3, 275 + y, centerFormat);
         }
 
+        // Startup
         public WeatherScreen()
         {
             InitializeComponent();
@@ -321,11 +329,9 @@ namespace XMLWeather
 
         private void WeatherScreen_Paint(object sender, PaintEventArgs e)
         {
-
+            // Current Weather Mode
             if (mode == 0)
             {
-                // Condition calculating
-
                 // Sun height
                 double sunSin = calculateSunHeight();
 
@@ -401,11 +407,13 @@ namespace XMLWeather
                 // Ground
                 e.Graphics.DrawImage(ground, 0, this.Height - 199);
 
+                // Lightning
                 if(nextLightning <= 0)
                 {
                     e.Graphics.DrawImage(lightning, lightningX, 70);
                 }
                 
+                // Rain, Clouds, Snow Particles
                 foreach (Particle p in ps)
                 {
                     if (conditionToString(theCondition) == "Drizzle")
@@ -448,22 +456,52 @@ namespace XMLWeather
 
                 // Current Weather label
                 e.Graphics.DrawString($"{conditionToString(Convert.ToInt16(Form1.days[0].condition))}", new Font("Segoe UI", 18, FontStyle.Bold), new SolidBrush(Color.White), this.Width / 2, 225, centerFormat);
+
+                // Box Info
+                boxOfInfo(e, 0, 302);
+
+                // Last Update Label
+                double lastUpdateHour = Convert.ToDouble(Convert.ToDateTime(Form1.days[0].currentTime).ToString("HH"));
+                double lastUpdateMin = Convert.ToDouble(Convert.ToDateTime(Form1.days[0].currentTime).ToString("mm"));
+
+                lastUpdateHour += Math.Floor(Form1.defaultTimezone / 3600);
+
+                if(lastUpdateHour >= 24)
+                {
+                    lastUpdateHour -= 24;
+                }
+                else if(lastUpdateHour < 0)
+                {
+                    lastUpdateHour += 24;
+                }
+
+                e.Graphics.DrawString($"Last Update: {lastUpdateHour}:{lastUpdateMin}", new Font("Segoe UI", 14, FontStyle.Bold), new SolidBrush(Color.White), this.Width / 2, this.Height - 20, centerFormat);
             }
+
+            // Forecast 
             if (mode == 1)
             {
+                // Lower 6 days
                 for (int i = 1; i < Form1.days.Count - 1; i++)
                 {
+                    // Date
                     e.Graphics.DrawString($"{Convert.ToDateTime(Form1.days[i].date).ToString("ddd").ToUpper()}", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55*(i-1), 340, centerFormat);
                     e.Graphics.DrawString($"{Convert.ToDateTime(Form1.days[i].date).ToString("dd")}", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55 * (i - 1), 360, centerFormat);
-                    // Forecast Image
+
+                    // Temperature
                     e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[i].tempHigh))}º", new Font("Segoe UI", 16, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55 * (i - 1), 440, centerFormat);
                     e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[i].tempLow))}º", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.Gray), 12 + 25 + 55 * (i - 1), 460, centerFormat);
-                    e.Graphics.DrawString($"{Math.Round(Convert.ToDouble(Form1.days[i].chanceofprep) * 10) * 10}%", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55 * (i - 1), 500, centerFormat);
 
+                    // Perentage of Precipiation
+                    e.Graphics.DrawString($"P.O.P\n{Math.Round(Convert.ToDouble(Form1.days[i].chanceofprep) * 10) * 10}%", new Font("Segoe UI", 12, FontStyle.Bold), new SolidBrush(Color.White), 12 + 25 + 55 * (i - 1), 500, centerFormat);
+
+                    // Condition Icon
                     e.Graphics.DrawImage(conditionToImage(conditionToString(Convert.ToInt32(Form1.days[i].condition))), 12 + 55 * (i - 1), 380, 50, 50);
 
+                    // If there is precipitation
                     if (Form1.days[i].precipitation != "")
                     {
+                        // Precipitation Bar
                         float precipitationBar = 1 + Convert.ToSingle(Form1.days[i].precipitation) * 5;
                         if(precipitationBar > 100)
                         {
@@ -475,8 +513,10 @@ namespace XMLWeather
                     }
                 }
 
+                // Box
                 boxOfInfo(e, selectedDay, 0);
             }
+
             // Select bar
             e.Graphics.FillRectangle(new SolidBrush(Color.White), selectBarX, 60, 118, 5);
 
@@ -492,6 +532,7 @@ namespace XMLWeather
             if (mode == 1)
             {
                 selectBarX += (116 - selectBarX) / 5;
+                // Show/Hide Day Buttons on Forecast
                 day1Button.Enabled = true;
                 day1Button.Visible = true;
                 day2Button.Enabled = true;
@@ -523,6 +564,7 @@ namespace XMLWeather
             if (mode == 2)
             {
                 selectBarX += (232 - selectBarX) / 5;
+                // Show/Hide Location Buttons and Labels
                 locationBox.Enabled = true;
                 locationBox.Visible = true;
                 searchButton.Enabled = true;
@@ -543,6 +585,7 @@ namespace XMLWeather
 
             if (mode == 0)
             {
+                // Cloud Cover Movement
                 cover1X += 0.2;
                 cover2X += 0.2;
                 if (cover1X >= 350)
@@ -672,10 +715,6 @@ namespace XMLWeather
                     }
                 }
             }
-            if (mode == 1)
-            {
-
-            }
             if (mode == 2)
             {
                 if(locationFindMode == 0)
@@ -758,7 +797,7 @@ namespace XMLWeather
             {
                 XmlReader reader = XmlReader.Create("http://api.openweathermap.org/data/2.5/weather?q=" + _city + "&mode=xml&units=metric&appid=3f2e224b815c0ed45524322e145149f0");
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
